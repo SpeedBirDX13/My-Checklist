@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body data-theme="light">
+  <div class="page-shell">
+    <header class="hero panel">
+      <div class="hero-copy">
+        <p class="eyebrow brand-mark"><span class="brand-dot"></span>Life OS</p>
+        <h1>Your day, a little more clear.</h1>
+        <p class="hero-text">Plan your day, keep track of what matters, and end the evening with a small sense of progress.</p>
+      </div>
+
+      <div class="hero-actions">
+        <div class="theme-switcher" role="group" aria-label="Theme selector">
+          <button class="theme-chip is-active" type="button" data-theme-target="light">Light</button>
+          <button class="theme-chip" type="button" data-theme-target="paper">Paper</button>
+          <button class="theme-chip" type="button" data-theme-target="dark">Dark</button>
+        </div>
+
+        <div class="date-cluster">
+          <div class="date-card">
+            <span class="label">Focus Date</span>
+            <strong id="prettyDate"></strong>
+          </div>
+          <label class="date-input-wrap" for="datePicker">
+            <span class="label">Switch date</span>
+            <input id="datePicker" type="date" aria-label="Select checklist date">
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-grid">
+      <section class="left-column">
+        <article class="panel overview-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Daily Overview</p>
+              <h2>Checklist progress</h2>
+            </div>
+            <div class="rank-pill" id="rankBadge">Starter</div>
+          </div>
+
+          <div class="overview-stats">
+            <div class="stat-card">
+              <span>Completion</span>
+              <strong id="completionPercent">0%</strong>
+              <small id="completionMeta">0 of 0 tasks complete</small>
+            </div>
+            <div class="stat-card">
+              <span>Priority tasks</span>
+              <strong id="priorityCount">0</strong>
+              <small>Highlighted for extra focus</small>
+            </div>
+            <div class="stat-card">
+              <span>Archive</span>
+              <strong id="archiveCount">0</strong>
+              <small>Past dated checklists saved</small>
+            </div>
+          </div>
+
+          <div class="progress-ring-card">
+            <div class="progress-ring" id="progressRing">
+              <div class="progress-ring-inner">
+                <strong id="ringPercent">0%</strong>
+                <span>Today</span>
+              </div>
+            </div>
+            <div class="progress-copy">
+              <h3>Real-time precision</h3>
+              <p>The dashboard continuously tracks completion, priority density, and your monthly momentum to keep the day intentional.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel task-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Task System</p>
+              <h2 id="taskPanelTitle">Tasks for Today</h2>
+            </div>
+            <button class="ghost-btn" id="jumpTodayBtn" type="button">Jump to Today</button>
+          </div>
+
+          <form class="task-form" id="taskForm">
+            <label class="task-input-wrap" for="taskInput">
+              <span class="sr-only">New task</span>
+              <input id="taskInput" type="text" maxlength="140" placeholder="Add a task with intent..." autocomplete="off">
+            </label>
+            <button class="priority-toggle" id="priorityToggle" type="button" aria-pressed="false">Priority Off</button>
+            <button class="primary-btn" type="submit">Add Task</button>
+          </form>
+
+          <div class="task-toolbar">
+            <div class="mini-stat">
+              <span>Selected date</span>
+              <strong id="selectedDateLabel"></strong>
+            </div>
+            <div class="mini-stat">
+              <span>Completed</span>
+              <strong id="completedTodayLabel">0</strong>
+            </div>
+          </div>
+
+          <ul class="task-list" id="taskList" aria-live="polite"></ul>
+        </article>
+
+        <article class="panel coding-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Coding Practice</p>
+              <h2>30 minute daily check</h2>
+            </div>
+            <div class="chart-toggle" role="group" aria-label="Coding practice range">
+              <button class="code-range-btn is-active" type="button" data-code-range="monthly">Monthly</button>
+              <button class="code-range-btn" type="button" data-code-range="yearly">Yearly</button>
+            </div>
+          </div>
+
+          <div class="coding-grid">
+            <div class="coding-check-card">
+              <span class="label">Today's practice</span>
+              <strong id="codingStatusTitle">Not done yet</strong>
+              <p id="codingStatusText">Mark this when you've completed at least 30 minutes of coding today.</p>
+              <button class="primary-btn coding-btn" id="codingToggleBtn" type="button">Mark 30 Minutes Done</button>
+            </div>
+
+            <div class="coding-stats">
+              <div class="summary-card">
+                <span>This month</span>
+                <strong id="codingMonthCount">0</strong>
+                <small>days completed</small>
+              </div>
+              <div class="summary-card">
+                <span>This year</span>
+                <strong id="codingYearCount">0</strong>
+                <small>days completed</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-wrap coding-chart-wrap">
+            <canvas id="codingChart" aria-label="Coding practice summary chart"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <aside class="right-column">
+        <article class="panel analytics-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Analytics Suite</p>
+              <h2>Weekly / Monthly progress</h2>
+            </div>
+            <div class="chart-toggle" role="group" aria-label="Analytics range">
+              <button class="range-btn is-active" type="button" data-range="weekly">Weekly</button>
+              <button class="range-btn" type="button" data-range="monthly">Monthly</button>
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <canvas id="progressChart" aria-label="Task completion chart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel summary-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Yearly Summary</p>
+              <h2>Completion intelligence</h2>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <span>Total completed</span>
+              <strong id="yearCompleted">0</strong>
+              <small>This calendar year</small>
+            </div>
+            <div class="summary-card">
+              <span>Best day</span>
+              <strong id="bestDayCount">0</strong>
+              <small id="bestDayLabel">No data yet</small>
+            </div>
+            <div class="summary-card accent">
+              <span>Monthly completion rate</span>
+              <strong id="monthlyRate">0%</strong>
+              <small>Used for rank progression</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel archive-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Archive Access</p>
+              <h2>Past dates, preserved</h2>
+            </div>
+          </div>
+
+          <div class="archive-list" id="archiveList"></div>
+        </article>
+
+        <article class="panel quote-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker">Intellectual Motivation</p>
+              <h2>Daily rotating quote</h2>
+            </div>
+          </div>
+
+          <blockquote class="quote-card">
+            <p id="quoteText"></p>
+            <footer id="quoteAuthor"></footer>
+          </blockquote>
+        </article>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
